@@ -1,9 +1,11 @@
 import urllib2
 
-def download(url,num_retries = 2):
+def download(url,user_agent = 'jrs',num_retries = 2):
     print 'Downloading:',url
+    headers = {'User-agent':user_agent}
+    request = urllib2.Request(url,headers=headers)
     try:
-        html = urllib2.urlopen(url).read()
+        html = urllib2.urlopen(request).read()
     except urllib2.URLError as e:
         print 'Download erro:',e.reason
         html = None
