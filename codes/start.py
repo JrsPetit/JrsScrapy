@@ -1,6 +1,7 @@
 import urllib2
 import re
 import itertools
+import urlparse
 
 def download(url,user_agent = 'jrs',num_retries = 2):
     print 'Downloading:',url
@@ -23,15 +24,21 @@ def link_crawler(seed_url, link_regex):
     while crawl_queue:
         url = crawl_queue.pop()
         html = download(url)
-        for link in get_links(html):
-            if re.match(link_regex , link):
+        links = get_links(html)
+        for link in links:
+            if re.match(link_regex ,link):
+                link = urlparse.urljoin(seed_url, link)
                 crawl_queue.append(link)
+                print 2222
+            else:
+                print link
 
 def get_links(html):
-    webpage_regex = re.compile('<a[^>]+href=["\'](.*?)["\']',re.IGNORECASE)
+    print 1111
+    webpage_regex = re.compile('<a[^>]+href=["\'](.*?)["\']', re.IGNORECASE)
     return webpage_regex.findall(html)
 
-link_crawler('http://example.webscraping.com','/(index|view)')
+link_crawler('http://example.webscraping.com', '(index|view)')
 '''
 download('http://example.webscraping.com')
 crawl_sitemap('http://example.webscraping.com/sitemap.xml')
