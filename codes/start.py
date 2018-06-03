@@ -16,25 +16,22 @@ def download(url,user_agent = 'jrs',num_retries = 2):
                 return download(url,num_retries-1)
     return html
 
-def crawl_sitemap(url):
-    sitemap = download(url)
-    links = re.findall('<loc>(.*?)</loc>',sitemap)
-    for link in links:
-        html = download(link)
+def link_crawler(seed_url, link_regex):
+    """crawl from the given seed URL following links matched by link_regex
+    """
+    crawl_queue = [seed_url]
+    while crawl_queue:
+        url = crawl_queue.pop()
+        html = download(url)
+        for link in get_links(html):
+            if re.match(link_regex , link):
+                crawl_queue.append(link)
 
-#maxinum unmber of consecutive download errors allowed
-max_errors = 5
-#current number of consecutive download errors
-num_errors = 0
-for page in itertools.count(1,1):
-    url = 'http://example.webscraping.com/view/-%d' % page
-    html = download(url)
-    if html is None:
-        num_errors +=1
-        if num_errors == max_errors:
-            break
-    else:
-        num_errors = 0
+def get_links(html):
+    webpage_regex = re.compile('<a[^>]+href=["\'](.*?)["\']',re.IGNORECASE)
+    return webpage_regex.findall(html)
+
+link_crawler('http://example.webscraping.com','/(index|view)')
 '''
 download('http://example.webscraping.com')
 crawl_sitemap('http://example.webscraping.com/sitemap.xml')
