@@ -38,7 +38,14 @@ def get_links(html):
     webpage_regex = re.compile('<a[^>]+href=["\'](.*?)["\']', re.IGNORECASE)
     return webpage_regex.findall(html)
 
-link_crawler('http://example.webscraping.com', '(index|view)')
+link_crawler('http://example.webscraping.com', '/places/default/(index|view)')
+'''test_str = '/places/default/index'
+test_regex = '/places/default/(index|view)' 
+if re.match(test_regex ,test_str):
+    print 'good'
+else:
+    print 'bad'
+'''
 '''
 download('http://example.webscraping.com')
 crawl_sitemap('http://example.webscraping.com/sitemap.xml')
