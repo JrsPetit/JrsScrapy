@@ -21,6 +21,7 @@ def link_crawler(seed_url, link_regex):
     """crawl from the given seed URL following links matched by link_regex
     """
     crawl_queue = [seed_url]
+    seen = set(crawl_queue)
     while crawl_queue:
         url = crawl_queue.pop()
         html = download(url)
@@ -28,17 +29,19 @@ def link_crawler(seed_url, link_regex):
         for link in links:
             if re.match(link_regex ,link):
                 link = urlparse.urljoin(seed_url, link)
-                crawl_queue.append(link)
-                print 2222
+                if link not in seen:
+                    seen.add(link)
+                    crawl_queue.append(link)
             else:
-                print link
+                print 'do not want ',link
 
 def get_links(html):
     print 1111
     webpage_regex = re.compile('<a[^>]+href=["\'](.*?)["\']', re.IGNORECASE)
     return webpage_regex.findall(html)
 
-link_crawler('http://example.webscraping.com', '/places/default/(index|view)')
+link_crawler('http://127.0.0.1:8000/places', '/places/default/(index|view)')
+
 '''test_str = '/places/default/index'
 test_regex = '/places/default/(index|view)' 
 if re.match(test_regex ,test_str):
