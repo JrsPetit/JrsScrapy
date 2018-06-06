@@ -4,10 +4,14 @@ import itertools
 import urlparse
 import robotparser
 
-def download(url,user_agent = 'jrs',num_retries = 2):
+def download(url,user_agent = 'jrs',proxy=None,num_retries = 2):
     print 'Downloading:',url
     headers = {'User-agent':user_agent}
     request = urllib2.Request(url,headers=headers)
+    opener = urllib2.build_opener()
+    if proxy:
+        proxy_params = {urlparse.urlparse(url).scheme:proxy}
+        opener.add_handler(urllib2.ProxyHandler(proxy_params))
     try:
         html = urllib2.urlopen(request).read()
     except urllib2.URLError as e:
