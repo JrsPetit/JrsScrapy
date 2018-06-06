@@ -1,6 +1,8 @@
 import urllib2
 import re
 import itertools
+import urlparse
+import robotparser
 
 def download(url,user_agent = 'jrs',num_retries = 2):
     print 'Downloading:',url
@@ -16,25 +18,53 @@ def download(url,user_agent = 'jrs',num_retries = 2):
                 return download(url,num_retries-1)
     return html
 
-def crawl_sitemap(url):
-    sitemap = download(url)
-    links = re.findall('<loc>(.*?)</loc>',sitemap)
-    for link in links:
-        html = download(link)
+def link_crawler(seed_url, link_regex):
+    """crawl from the given seed URL following links matched by link_regex
+    """
+    rp = robotparser.RobotFileParser()
+    rp.set_url('http://192.168.1.5:8000/places/static/robots.txt')
+    rp.read()
+    user_agent = 'BadCrawler'
 
-#maxinum unmber of consecutive download errors allowed
-max_errors = 5
-#current number of consecutive download errors
-num_errors = 0
-for page in itertools.count(1,1):
-    url = 'http://example.webscraping.com/view/-%d' % page
-    html = download(url)
-    if html is None:
-        num_errors +=1
-        if num_errors == max_errors:
-            break
-    else:
-        num_errors = 0
+    crawl_queue = [seed_url]
+    seen = set(crawl_queue)
+    while crawl_queue:
+        url = crawl_queue.pop()
+        if rp.can_fetch(user_agent, url):
+            html = download(url)
+            links = get_links(html)
+            for link in links:
+                if re.match(link_regex ,link):
+                    link = urlparse.urljoin(seed_url, link)
+                    if link not in seen:
+                        seen.add(link)
+                        crawl_queue.append(link)
+                else:
+                    print 'do not want ',link
+        else:
+            print 'Blocked by robots.txt ',url 
+
+def get_links(html):
+    print 1111
+    webpage_regex = re.compile('<a[^>]+href=["\'](.*?)["\']', re.IGNORECASE)
+    return webpage_regex.findall(html)
+
+link_crawler('http://192.168.1.5:8000/places', '/places/default/(index|view)')
+'''
+rp = robotparser.RobotFileParser()
+rp.set_url('http://example.webscraping.com/robots.txt')
+rp.read()
+url = 'http://example.webscraping.com'
+user_agent = 'jrs'
+print rp.can_fetch(user_agent,url)
+'''
+'''test_str = '/places/default/index'
+test_regex = '/places/default/(index|view)' 
+if re.match(test_regex ,test_str):
+    print 'good'
+else:
+    print 'bad'
+'''
 '''
 download('http://example.webscraping.com')
 crawl_sitemap('http://example.webscraping.com/sitemap.xml')
