@@ -1,6 +1,6 @@
 import random as r
 
-class Fish:
+class Fish(object):
     def __init__(self):
         self.x = r.randint(0,10)
         self.y = r.randint(0,10)
