@@ -22,6 +22,18 @@ class Shark(Fish):
             self.hungry = False
         else:
             print "no more food!"
+class Base:
+    num = 0
+    def __init__(self):
+        self.count = 0
+    def getCount(self):
+        return self.count
+    def setCount(self,a):
+        self.count = a
+    def delCount(self):
+        del self.count
+    x = property(getCount,setCount,delCount)
+
 
 if __name__ == '__main__':
     shark = Shark()
@@ -29,3 +41,16 @@ if __name__ == '__main__':
     shark.eat()
     shark.move()
     shark.move()
+    print issubclass(Shark,Fish),isinstance(shark,Shark),hasattr(shark,'hungry'),getattr(shark,'qq','no such thing!')
+    a = Base()
+    c = Base()
+    c.count = 10
+    c.num = 10
+    Base.count = 100
+    Base.num = 100
+    print a.count,a.num
+    print c.count,c.num
+    bb = Base()
+    print bb.x
+    bb.x = 2
+    print bb.x
