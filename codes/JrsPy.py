@@ -34,6 +34,17 @@ class Base:
         del self.count
     x = property(getCount,setCount,delCount)
 
+#__new__
+class CapStr(str):
+    def __new__(cls,string):
+        string = string.upper()
+        return str.__new__(cls,string)
+
+class New_int(int):
+    def __add__(self,other):
+        return int.__sub__(self,other)
+    def __sub__(self,other):
+        return int.__add__(self,other)
 
 if __name__ == '__main__':
     shark = Shark()
@@ -54,3 +65,10 @@ if __name__ == '__main__':
     print bb.x
     bb.x = 2
     print bb.x
+
+    a = CapStr("I love you!")
+    print a
+
+    a = New_int(3)
+    b = New_int(5)
+    print a-b
