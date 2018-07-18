@@ -1,4 +1,5 @@
 import random as r
+import time as t
 
 class Fish(object):
     def __init__(self):
@@ -45,6 +46,37 @@ class New_int(int):
         return int.__sub__(self,other)
     def __sub__(self,other):
         return int.__add__(self,other)
+
+class MyTimer:
+    def __init__(self):
+        self.start = 0
+        self.stop =0
+        self.lasted = []
+        self.prompt = "计时未开始！"
+        self.unit = ["年","月","日","小时","分钟","秒"]
+    
+    def __str__(self):
+        return self.prompt
+    
+    __repr__ = __str__
+
+    def begin(self):
+        self.start = t.localtime()
+        print "计时开始！"
+    
+    def end(self):
+        self.stop = t.localtime()
+        print "计时结束！"
+        self._calc()
+
+    def _calc(self):
+        self.lasted = []
+        self.prompt = "总共运行了"
+        for index in range(6):
+            self.lasted.append(self.stop[index]-self.start[index])
+            if self.lasted[index]:
+                self.prompt +=(str(self.lasted[index]+self.unit[index]))
+
 
 if __name__ == '__main__':
     shark = Shark()
