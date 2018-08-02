@@ -15,7 +15,7 @@ def bs_scraper(html):
     soup = BeautifulSoup(html,'html.parser')
     results = {}
     for field in FIELDS:
-        results[field] = soup.find('table').find('tr',id='places_%s__row' % field).find('td',class='w2p_fw').text
+        results[field] = soup.find('table').find('tr',id='places_%s__row' % field).find('td',class_='w2p_fw').text
     return results
 
 def lxml_scraper(html):
