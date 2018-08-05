@@ -2,9 +2,10 @@ import re
 import urllib2
 import lxml.html
 from bs4 import BeautifulSoup
+import time
 
 FIELDS = ('area','population','iso','country','capital','continent','tld','currency_code','currency_name','phone','postal_code_format','postal_code_regex','languages','neighbours')
-
+NUM_ITERATIONS = 100 #number of times to test each scraper
 def re_scraper(html):
     results = {}
     for field in FIELDS:
@@ -59,3 +60,20 @@ if __name__ == "__main__":
     tree2 = lxml.html.fromstring(html)
     td = tree2.cssselect("tr#places_area__row > td.w2p_fw")[0]
     print td.text_content()
+
+    for name,scraper in [('Regular expressions',re_scraper),('BeautifulSoup',bs_scraper),('lxml',lxml_scraper)]:
+        start_time = time.time()
+        for i in range(NUM_ITERATIONS):
+            if scraper == re_scraper:
+                re.purge()
+            result = scraper(html)
+            assert(result['area'] =='1580 square kilometres')
+        end = time.time()
+        print '%s:%.2f seconds' % (name,end-start_time)
+#2018.08.05 test
+'''
+1580 square kilometres
+Regular expressions:15.61 seconds
+BeautifulSoup:77.98 seconds
+lxml:3.76 seconds
+'''
