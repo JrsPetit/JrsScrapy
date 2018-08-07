@@ -65,7 +65,7 @@ def download(url,headers,proxy,num_retries, data = None):
             code = None
     return html
 
-def link_crawler(seed_url, link_regex=None,delay= 5, max_depth=-1,max_urls=-1, headers=None, user_agent='jrs', proxy=None, num_retries=1):
+def link_crawler(seed_url, link_regex=None,delay= 5, max_depth=-1,max_urls=-1, headers=None, user_agent='jrs', proxy=None, num_retries=1,scrape_callback=None):
     """crawl from the given seed URL following links matched by link_regex
     """
     crawl_queue = Queue.deque([seed_url])
@@ -84,6 +84,9 @@ def link_crawler(seed_url, link_regex=None,delay= 5, max_depth=-1,max_urls=-1, h
             throttle.wait(url)
             html = download(url, headers, proxy=proxy, num_retries=num_retries)
             links = []
+
+            if scrape_callback:
+                links.extend(scrape_callback(url,html) or [])
 
             depth = seen[url]
             if depth != max_depth:
@@ -136,7 +139,7 @@ def get_links(html):
 
 if __name__ == '__main__':
     link_crawler('http://example.webscraping.com', '/places/default/(index|view)', delay=0, num_retries=1, user_agent='BadCrawler')
-    link_crawler('http://example.webscraping.com', '/places/default/(index|view)', delay=0, num_retries=1, max_depth=1, user_agent='GoodCrawler')
+    link_crawler('http://127.0.0.1:8000/places', '/places/default/(index|view)', delay=0, num_retries=1, max_depth=-1, user_agent='GoodCrawler',scrape_callback=ScrapeCallback())
 
 #link_crawler('http://192.168.1.5:8000/places', '/places/default/(index|view)')
 '''
