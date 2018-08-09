@@ -10,6 +10,9 @@ class Fish(object):
     def move(self):
         self.x -= 1
         print "Now I'm at %d,%d" % (self.x,self.y)
+    
+    def __call__(self,name):
+        print "my name is ",name
 
 class Shark(Fish):
     def __init__(self):
@@ -78,6 +81,11 @@ class MyTimer:
             if self.lasted[index]:
                 self.prompt +=(str(self.lasted[index]+self.unit[index]))
 
+def JrsSo(call_back = None):
+    links = []
+    if call_back:
+        links.extend(call_back("jrs") or [])
+    print links
 
 if __name__ == '__main__':
     shark = Shark()
@@ -105,3 +113,5 @@ if __name__ == '__main__':
     a = New_int(3)
     b = New_int(5)
     print a-b
+
+    JrsSo(call_back=Fish())

@@ -1,5 +1,6 @@
 import urllib2
 import urlparse
+import random
 import time
 from datetime import datetime
 
@@ -31,4 +32,21 @@ class Downloader:
         self.cache = cache
     
     def __call__(self,url):
+        result = None
+        if self.cache:
+            try:
+                result = self.cache[url]
+            except KeyError:
+                #url is not available in cache
+                pass
+            else:
+                if self.num_retries >0 and 500<= result['code'] <600:
+                    #serve error so ignore result from cache and re-download
+                    result = None
         
+        if result is None:
+            #result was not loaded from cache so still need to download
+            self.throttle.wait(url)
+            proxy = random.choice(self.proxies) if self.proxies else None
+            headers = {'User-agent':self.user_agent}
+            
