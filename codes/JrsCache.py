@@ -3,6 +3,12 @@ import urlparse
 import random
 import time
 from datetime import datetime
+import socket
+
+DEFAULT_AGENT = 'jrs'
+DEFAULT_DELAY = 5
+DEFAULT_RETRIES = 1
+DEFAULT_TIMEOUT = 60
 
 class Throttle:
     """Throttle downloading by sleeping between requests to same domain
@@ -24,12 +30,14 @@ class Throttle:
         self.domains[domain] = datetime.now()
 
 class Downloader:
-    def __init__(self,delay=5,user_agent='jrs',proxies=None,num_retries=1,cache=None):
+    def __init__(self,delay=DEFAULT_DELAY,user_agent=DEFAULT_AGENT,proxies=None,num_retries=DEFAULT_RETRIES,cache=None,opener=None,timeout=DEFAULT_TIMEOUT):
+        socket.setdefaulttimeout(60)
         self.throttle = Throttle(delay)
         self.user_agent = user_agent
         self.proxies = proxies
         self.num_retries = num_retries
         self.cache = cache
+        self.opener = opener
     
     def __call__(self,url):
         result = None
@@ -49,4 +57,31 @@ class Downloader:
             self.throttle.wait(url)
             proxy = random.choice(self.proxies) if self.proxies else None
             headers = {'User-agent':self.user_agent}
-            
+            result = self.download(url,headers,proxy,self.num_retries)
+            if self.cache:
+                #save result to cache
+                self.cache[url] = result
+        return result['html']
+
+    def download(self,url,headers,proxy,num_retries,data=None):
+        print 'Downloading:', url
+        request = urllib2.Request(url, data, headers or {})
+        opener = self.opener or urllib2.build_opener()
+        if proxy:
+            proxy_params = {urlparse.urlparse(url).scheme: proxy}
+            opener.add_handler(urllib2.ProxyHandler(proxy_params))
+        try:
+            response = opener.open(request)
+            html = response.read()
+            code = response.code
+        except Exception as e:
+            print 'Download error:', str(e)
+            html = ''
+            if hasattr(e, 'code'):
+                code = e.code
+                if num_retries > 0 and 500 <= code < 600:
+                    # retry 5XX HTTP errors
+                    return self._get(url, headers, proxy, num_retries-1, data)
+            else:
+                code = None
+        return {'html':html,'code':code}
