@@ -13,7 +13,7 @@ class Fish(object):
     
     def __call__(self,name):
         print "my name is ",name
-        return '%s' % name
+        return name
 
 class Shark(Fish):
     def __init__(self):
