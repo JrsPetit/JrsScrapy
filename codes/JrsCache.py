@@ -4,6 +4,7 @@ import random
 import time
 from datetime import datetime
 import socket
+import robotparser
 
 DEFAULT_AGENT = 'jrs'
 DEFAULT_DELAY = 5
@@ -87,4 +88,25 @@ class Downloader:
                 code = None
         return {'html':html,'code':code}
 
-def link_crawler(seed_url,link_regex=None,delay=DEFAULT_DELAY,max_depth=-1,max_url=-1,headers=None,user_agent=DEFAULT_AGENT,cache=None):
+def link_crawler(seed_url,link_regex=None,delay=DEFAULT_DELAY,max_depth=-1,max_url=-1,headers=None,user_agent=DEFAULT_AGENT,proxies=None,num_retries=-1,cache=None):
+    crawl_queue = [seed_url]
+    seen = {seed_url:0}
+    num_urls = 0
+    rp = get_robots(seed_url)
+    D =Downloader(delay=delay,user_agent=user_agent,proxies=proxies,num_retries=num_retries,cache=cache)
+    while crawl_queue:
+        url = crawl_queue.pop()
+        depth = seen[url]
+        # check url passes robots.txt restrictions
+        if rp.can_fetch(user_agent,url):
+            html = D(url)
+            links = []
+
+
+def get_robots(url):
+    """Initialize robots parser for this domain
+    """
+    rp = robotparser.RobotFileParser()
+    rp.set_url(urlparse.urljoin(url, '/robots.txt'))
+    rp.read()
+    return rp
