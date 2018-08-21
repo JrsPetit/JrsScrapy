@@ -82,6 +82,9 @@ class Downloader:
                 if num_retries > 0 and 500 <= code < 600:
                     # retry 5XX HTTP errors
                     return self._get(url, headers, proxy, num_retries-1, data)
+                    #return download(self,url, headers, proxy, num_retries-1, data)
             else:
                 code = None
         return {'html':html,'code':code}
+
+def link_crawler(seed_url,link_regex=None,delay=DEFAULT_DELAY,max_depth=-1,max_url=-1,headers=None,user_agent=DEFAULT_AGENT,cache=None):
