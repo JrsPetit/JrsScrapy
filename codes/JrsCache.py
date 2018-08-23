@@ -110,3 +110,16 @@ def get_robots(url):
     rp.set_url(urlparse.urljoin(url, '/robots.txt'))
     rp.read()
     return rp
+
+if __name__ == '__main__':
+    url = 'http://127.0.0.1:8000/places/static'
+    rp = robotparser.RobotFileParser()
+    rp.set_url('http://127.0.0.1:8000/places/static/robots.txt')
+    #rp.set_url(urlparse.urljoin(url, '/robots.txt'))
+    print urlparse.urljoin(url, '/robots.txt')
+    rp.read()
+    print rp
+    url1 = 'http://127.0.0.1:8000/places'
+    #user_agent = 'jrs'
+    user_agent = 'BadCrawler'
+    print rp.can_fetch(user_agent,url1)
