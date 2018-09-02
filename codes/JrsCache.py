@@ -166,3 +166,8 @@ if __name__ == '__main__':
 
     url2 = "http://example.webscraping.com/default/view/Australia-1"
     print re.sub('[^/0-9a-zA-Z\-.,;_ ]','_',url2)
+
+    components = urlparse.urlsplit('http://example.webscraping.com/index/')
+    print components
+    components2 = urlparse.urlsplit('https://www.baidu.com/s?ie=UTF-8&wd=%5C0')
+    print components2
