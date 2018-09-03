@@ -1,11 +1,20 @@
 import os
 import re
 import urlparse
+import pickle
 
 class DiskCache:
     def __init__(self,cache_dir='cache'):
         self.cache_dir = cache_dir
         #self.max_length = max_length
+    
+    def __getitem__(self,url):
+        """Load data from disk for this URL
+        """
+        path = self.urlToPath(url)
+        if os.path.exists(path):
+            with open(path,'rb') as fp:
+                return pickle.load(fp)
     
     def urlToPath(self,url):
         """Create file system path for this URL
@@ -19,3 +28,6 @@ class DiskCache:
         filename = components.netloc + path + components.query
         #replace invalid characters
         filename = re.sub('[^/0-9a-zA-Z\-.,;_ ]','_',filename)
+        #restrict maximum number of characters
+        filename = '/'.join(segment[:255] for segment in filename.split('/'))
+        return os.path.join(self.cache_dir,filename)
