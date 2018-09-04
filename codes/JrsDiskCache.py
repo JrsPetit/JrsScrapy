@@ -15,6 +15,9 @@ class DiskCache:
         if os.path.exists(path):
             with open(path,'rb') as fp:
                 return pickle.load(fp)
+        else:
+            #URL has not yet been cached
+            raise KeyError(url + 'does not exist')
     
     def urlToPath(self,url):
         """Create file system path for this URL
