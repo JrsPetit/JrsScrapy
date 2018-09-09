@@ -19,6 +19,17 @@ class DiskCache:
             #URL has not yet been cached
             raise KeyError(url + 'does not exist')
     
+    def __setitem__(self,url,result):
+        """save data to disk for this url
+        """
+        path = self.urlToPath(url)
+        folder = os.path.dirname(path)
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        with open(path,'wb') as fp:
+            fp.write(pickle.dumps(result))
+
+    
     def urlToPath(self,url):
         """Create file system path for this URL
         """
