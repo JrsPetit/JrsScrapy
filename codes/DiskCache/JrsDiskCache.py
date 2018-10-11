@@ -11,8 +11,10 @@ except ImportError:
 from JrsLinkCrawler import link_crawler
 
 class DiskCache:
-    def __init__(self,cache_dir='cache'):
+    def __init__(self,cache_dir='cache',expires=timedelta(days=30),compress=True):
         self.cache_dir = cache_dir
+        self.expires = expires
+        self.compress = compress
         #self.max_length = max_length
     
     def __getitem__(self,url):
@@ -36,7 +38,11 @@ class DiskCache:
         with open(path,'wb') as fp:
             fp.write(pickle.dumps(result))
 
-    
+    '''
+    def __delitem__(self,url):
+        path = self._key_path(url)
+    '''
+
     def urlToPath(self,url):
         """Create file system path for this URL
         """
@@ -53,6 +59,8 @@ class DiskCache:
         filename = '/'.join(segment[:255] for segment in filename.split('/'))
         return os.path.join(self.cache_dir,filename)
 
+if __name__ == '__main__':
+    link_crawler('http://127.0.0.1:8000/places', '/places/default/(index|view)', cache=DiskCache())
 
 '''
 import os
