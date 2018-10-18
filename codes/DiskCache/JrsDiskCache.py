@@ -11,7 +11,7 @@ except ImportError:
 from JrsLinkCrawler import link_crawler
 
 class DiskCache:
-    def __init__(self,cache_dir='cache',expires=timedelta(days=30),compress=True):
+    def __init__(self,cache_dir='JrsCache',expires=timedelta(days=30),compress=True):
         self.cache_dir = cache_dir
         self.expires = expires
         self.compress = compress
@@ -20,6 +20,7 @@ class DiskCache:
     def __getitem__(self,url):
         """Load data from disk for this URL
         """
+        print '~getitem~'
         path = self.urlToPath(url)
         if os.path.exists(path):
             with open(path,'rb') as fp:
@@ -31,10 +32,16 @@ class DiskCache:
     def __setitem__(self,url,result):
         """save data to disk for this url
         """
+        print "~setitem~"
         path = self.urlToPath(url)
+        print path
         folder = os.path.dirname(path)
+        print folder
         if not os.path.exists(folder):
-            os.makedirs(folder)
+            try:
+                os.makedirs(folder)
+            except Exception as e:
+                print 'direrror:',str(e)
         with open(path,'wb') as fp:
             fp.write(pickle.dumps(result))
 
@@ -45,7 +52,7 @@ class DiskCache:
 
     def urlToPath(self,url):
         """Create file system path for this URL
-        """
+        """                                                                                                                 
         components = urlparse.urlsplit(url)
         path = components.path
         if not path:
@@ -57,11 +64,33 @@ class DiskCache:
         filename = re.sub(r'[^/0-9a-zA-Z\-.,;_ ]','_',filename)
         #restrict maximum number of characters
         filename = '/'.join(segment[:255] for segment in filename.split('/'))
+        print 'filenames:',filename
         return os.path.join(self.cache_dir,filename)
 
 if __name__ == '__main__':
-    link_crawler('http://127.0.0.1:8000/places', '/places/default/(index|view)', cache=DiskCache())
-
+    link_crawler('http://127.0.0.1:8000/places/default/index/1', '/places/default/(index|view)', cache=DiskCache())
+    """ paths =  'JrsCache2\\127.0.0.1_8000/places/default/index/1'  
+    os.makedirs(paths)
+    paths2 = 'JrsCache3\\127.0.0.1_8000/places/default/index/1'
+    folders = os.path.dirname(paths2)
+    os.makedirs(folders) """
+    
+    """ result = [0,1,2]
+    JFilenames = '127.0.0.1_8000/places/default/index/1.txt'
+    JPath = os.path.join('cache',JFilenames)
+    print JPath
+    JFolder = os.path.dirname(JPath)
+    print JFolder
+    if not os.path.exists(JFolder):
+        os.makedirs(JFolder)
+    with open(JPath,'wb') as fp:
+        fp.write(pickle.dumps(result))
+    if os.path.exists(JPath):
+            with open(JPath,'rb') as fp:
+                print pickle.load(fp)[2]
+    else:
+        #URL has not yet been cached
+        raise KeyError('url' + 'does not exist') """
 '''
 import os
 import re

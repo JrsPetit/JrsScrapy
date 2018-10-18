@@ -22,7 +22,7 @@ class Downloader:
         self.opener = opener
         self.cache = cache
 
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
     def __call__(self, url):
         result = None
         if self.cache:
