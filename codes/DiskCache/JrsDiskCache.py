@@ -20,11 +20,16 @@ class DiskCache:
     def __getitem__(self,url):
         """Load data from disk for this URL
         """
-        print '~getitem~'
         path = self.urlToPath(url)
         if os.path.exists(path):
             with open(path,'rb') as fp:
-                return pickle.load(fp)
+                data = fp.read()
+                if self.compress:
+                    data = zlib.decompress(data)
+                result,timestamp = pickle.loads(data)
+                if self.has_expired(timestamp):
+                    raise KeyError(url + ' has expired')
+                return result
         else:
             #URL has not yet been cached
             raise KeyError(url + 'does not exist')
@@ -32,23 +37,36 @@ class DiskCache:
     def __setitem__(self,url,result):
         """save data to disk for this url
         """
-        print "~setitem~"
         path = self.urlToPath(url)
-        print path
         folder = os.path.dirname(path)
-        print folder
         if not os.path.exists(folder):
             try:
                 os.makedirs(folder)
             except Exception as e:
                 print 'direrror:',str(e)
+        data = pickle.dumps(result,datetime.utcnow())
+        if self.compress:
+            data = zlib.compress(data)
         with open(path,'wb') as fp:
-            fp.write(pickle.dumps(result))
+            fp.write(data)
 
     '''
     def __delitem__(self,url):
         path = self._key_path(url)
+        try:
+            os.remove(path)
+            os.removedirs(os.path.dirname(path))
+        except OSError：
+            pass
+
+    def clear(self):
+        if os.path.exists(self.cache_dir):
+           shutil.retree(self.cache_dir) 
     '''
+
+
+    def has_expired(self,timestamp):
+        return datetime.utcnow() > timestamp + self.expires
 
     def urlToPath(self,url):
         """Create file system path for this URL
