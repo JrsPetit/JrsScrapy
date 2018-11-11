@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import re
 import urlparse
@@ -9,14 +10,14 @@ try:
 except ImportError:
     import pickle
 from JrsLinkCrawler import link_crawler
-
+import time
 class DiskCache:
     def __init__(self,cache_dir='JrsCache',expires=timedelta(days=30),compress=True):
         self.cache_dir = cache_dir
         self.expires = expires
         self.compress = compress
         #self.max_length = max_length
-    
+     
     def __getitem__(self,url):
         """Load data from disk for this URL
         """
@@ -44,7 +45,7 @@ class DiskCache:
                 os.makedirs(folder)
             except Exception as e:
                 print 'direrror:',str(e)
-        data = pickle.dumps(result,datetime.utcnow())
+        data = pickle.dumps((result,datetime.utcnow()))
         if self.compress:
             data = zlib.compress(data)
         with open(path,'wb') as fp:
@@ -86,7 +87,15 @@ class DiskCache:
         return os.path.join(self.cache_dir,filename)
 
 if __name__ == '__main__':
-    link_crawler('http://127.0.0.1:8000/places/default/index/1', '/places/default/(index|view)', cache=DiskCache())
+    #link_crawler('http://127.0.0.1:8000/places/default/index/1', '/places/default/(index|view)', cache=DiskCache())
+    cache = DiskCache(expires=timedelta(seconds=5))
+    url = "http://127.0.0.1:8000/places/default/index/1"
+    result = {'html':'...'}
+    cache[url] = result
+    print cache[url]
+    time.sleep(5)
+    print cache[url]
+
     """ paths =  'JrsCache2\\127.0.0.1_8000/places/default/index/1'  
     os.makedirs(paths)
     paths2 = 'JrsCache3\\127.0.0.1_8000/places/default/index/1'
