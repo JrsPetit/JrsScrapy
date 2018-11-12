@@ -3,16 +3,16 @@ import os
 from pymongo import MongoClient
 from pprint import pprint
 from bson.son import SON
-
+'''
 class Connect(object):
     def get_connection(self):
         return MongoClient("mongodb://$[username]:$[password]@$[hostlist]/$[database]?authSource=$[authSource]")
-
-if __name__ == "__main__":
+'''
+if __name__ == '__main__':
     client = MongoClient('localhost',27017)
     url = 'http://example.webscraping.com/view/United-kingdom-239'
     html = '...'
-    db = client.cache
+    db = client.cache2
     db.webpage.insert_one(
     {
      "item": "canvas",
@@ -45,6 +45,9 @@ if __name__ == "__main__":
      "size": SON([("h", 10), ("w", 15.25), ("uom", "cm")]),
      "status": "A"}])
     cursor2 = db.webpage2.find({"status":"D"})
+    cursor3 = db.webpage2.find({"size.uom":"in"})
 
     for item in cursor2:
+        pprint(item)
+    for item in cursor3:
         pprint(item)
