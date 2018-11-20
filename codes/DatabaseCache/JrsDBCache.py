@@ -4,22 +4,29 @@ from pymongo import MongoClient
 from pprint import pprint
 from bson.son import SON
 from datetime import datetime,timedelta
+import time
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+import zlib
+from bson.binary import Binary
 
 class MongoCache:
     def __init__(self, client=None, expires = timedelta(days=30)):
         self.client = MongoClient('localhost',27017) if client is None else client
-        self.db = client.cache
+        self.db = self.client.cache
         self.db.webpage.create_index('timestamp',expireAfterSeconds = expires.total_seconds())
 
     def __getitem__(self,url):
         record = self.db.webpage.find_one({'_id':url})
         if record:
-            return record['result']
+            return pickle.loads(zlib.decompress(record['result']))
         else:
             raise KeyError(url + 'does not exist')
     
     def __setitem__(self,url,result):
-        record = {'result':result, 'timestamp':datetime.utcnow()}
+        record = {'result':Binary(zlib.compress(pickle.dumps(result))), 'timestamp':datetime.utcnow()}
         self.db.webpage.update({'_id':url},{'$set':record}, upsert = True)
 
 """ class Connect(object):
@@ -27,19 +34,25 @@ class MongoCache:
         return MongoClient("mongodb://$[username]:$[password]@$[hostlist]/$[database]?authSource=$[authSource]") """
 
 if __name__ == '__main__':
-    client = MongoClient('localhost',27017)
+    cache = MongoCache(expires=timedelta())
+    url = 'www.jrs.com'
+    result = {'html':'hahahah'}
+    cache[url] = result
+    time.sleep(60)
+    print cache[url]
+    """ client = MongoClient('localhost',27017)
     url = 'http://example.webscraping.com/view/United-kingdom-239'
     html = '...'
-    db = client.cache2
+    db = client.cache2 """
     """ db.webpage.insert_one(
     {
      "item": "canvas",
      "qty": 100,
      "tags": ["cotton"],
      "size": {"h": 28, "w": 35.5, "uom": "cm"}}) """
-    cursor = db.webpage.find({})
+    """ cursor = db.webpage.find({})
     for item in cursor:
-        pprint(item)
+        pprint(item) """
     
     """ db.webpage2.insert_many([
     {"item": "journal",
@@ -62,7 +75,7 @@ if __name__ == '__main__':
      "qty": 45,
      "size": SON([("h", 10), ("w", 15.25), ("uom", "cm")]),
      "status": "A"}]) """
-    cursor2 = db.webpage2.find({"status":"D"})
+    """ cursor2 = db.webpage2.find({"status":"D"})
     cursor3 = db.webpage2.find({"size.uom":"in"})
     cursor4 = db.webpage2.find({"size.h":{"$lt":9}})#less than/greater than
     cursor5 = db.webpage2.find({"status":"A","size.h":{"$lt":9}})
@@ -77,4 +90,4 @@ if __name__ == '__main__':
         pprint(item)
     print "----cursor5----"
     for item in cursor7:
-        pprint(item)
+        pprint(item) """
