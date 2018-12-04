@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 import socket
 
 
-DEFAULT_AGENT = 'jrs'
+DEFAULT_AGENT = 'lyq'
 DEFAULT_DELAY = 5
-DEFAULT_RETRIES = 1
+DEFAULT_RETRIES = 2
 DEFAULT_TIMEOUT = 60
 
 
