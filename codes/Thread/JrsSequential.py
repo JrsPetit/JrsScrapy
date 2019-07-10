@@ -9,7 +9,7 @@ from pprint import pprint
 class JrsCallback:
     def __init__(self, max_urls = 10):
         self.max_urls = max_urls
-        self.seed_url = 'http://127.0.0.1:8000/places/static/test.csv.zip'
+        self.seed_url = 'http://192.168.0.102:8000/places/static/test.csv.zip'
     
     def __call__(self, url , html):
         if url == self.seed_url:
@@ -24,7 +24,7 @@ class JrsCallback:
 
 if __name__ == "__main__":
     D = Downloader()
-    zipped_data = D('http://127.0.0.1:8000/places/static/test.csv.zip')
+    zipped_data = D('http://192.168.0.102:8000/places/static/test.csv.zip')
     urls = []
     with ZipFile(StringIO(zipped_data)) as zf:
         csv_filename = zf.namelist()[0]

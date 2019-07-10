@@ -138,8 +138,8 @@ def get_links(html):
     return webpage_regex.findall(html)
 
 if __name__ == '__main__':
-    link_crawler('http://example.webscraping.com', '/places/default/(index|view)', delay=0, num_retries=1, user_agent='BadCrawler')
-    link_crawler('http://127.0.0.1:8000/places', '/places/default/(index|view)', delay=0, num_retries=1, max_depth=-1, user_agent='GoodCrawler',scrape_callback=ScrapeCallback())
+    #link_crawler('http://example.webscraping.com', '/places/default/(index|view)', delay=0, num_retries=1, user_agent='BadCrawler')
+    link_crawler('http://192.168.0.102:8000/places', '/places/default/(index|view)', delay=2, num_retries=1, max_depth=-1, user_agent='GoodCrawler',scrape_callback=ScrapeCallback())
 
 #link_crawler('http://192.168.1.5:8000/places', '/places/default/(index|view)')
 '''

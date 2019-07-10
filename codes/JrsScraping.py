@@ -22,7 +22,7 @@ class Throttle:
         
     def wait(self, url):
         domain = urlparse.urlparse(url).netloc
-        last_accessed = self.domains.get(domain)
+        last_accessed = self.domains.get(domain)#won't raise a exception if not exist
 
         if self.delay > 0 and last_accessed is not None:
             sleep_secs = self.delay - (datetime.now() - last_accessed).seconds
