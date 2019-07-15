@@ -41,14 +41,14 @@ def link_crawler(seed_url, link_regex=None, delay=5, max_depth=-1, max_urls=-1, 
                     links.extend(link for link in get_links(html) if re.match(link_regex, link))
 
                 for link in links:
-                    link = normalize(seed_url, link)
+                    #link = normalize(seed_url, link)
                     # check whether already crawled this link
                     if link not in seen:
                         seen[link] = depth + 1
                         # check link is within same domain
-                        if same_domain(seed_url, link):
+                        #if same_domain(seed_url, link):
                             # success! add this new link to queue
-                            crawl_queue.append(link)
+                        crawl_queue.append(link)
 
             # check whether have reached downloaded maximum
             num_urls += 1

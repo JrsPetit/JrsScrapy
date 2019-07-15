@@ -15,7 +15,7 @@ from bson.binary import Binary
 class MongoCache:
     def __init__(self, client=None, expires = timedelta(days=30)):
         self.client = MongoClient('localhost',27017) if client is None else client
-        self.db = self.client.cache2
+        self.db = self.client.cache
         self.db.webpage.create_index('timestamp',expireAfterSeconds = expires.total_seconds())
 
     def __getitem__(self,url):

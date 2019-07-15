@@ -7,7 +7,7 @@ from JrsDownload import Downloader
 from pprint import pprint
 
 class JrsCallback:
-    def __init__(self, max_urls = 10):
+    def __init__(self, max_urls = 100):
         self.max_urls = max_urls
         self.seed_url = 'http://192.168.0.102:8000/places/static/test.csv.zip'
     
