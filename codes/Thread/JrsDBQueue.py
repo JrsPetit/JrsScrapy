@@ -7,7 +7,7 @@ class MongoQueue:
     OUTSTANDING, PROCESSING, COMPLETE = range(3)
 
     def __init__(self, client=None, timeout= 300):
-        self.client = MongoClient() if client is None else client
+        self.client = MongoClient('localhost',27017) if client is None else client
         self.db = self.client.queue
         self.timeout = timeout
     
@@ -36,7 +36,7 @@ class MongoQueue:
             return record['_id']
         else:
             self.repair()
-            raise KeyError()
+            #raise KeyError()
     
     def complete(self, url):
         self.db.crawl_queue.update({'_id':url}, {'$set':{'status':self.COMPLETE}})
@@ -55,3 +55,9 @@ class MongoQueue:
             print 'Released', record['_id']
 
 
+if __name__ == '__main__':
+    jrs = MongoQueue()
+    if jrs:
+        print "good"
+    else:
+        print "bad"

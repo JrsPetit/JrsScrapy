@@ -19,6 +19,8 @@ def thread_crawler(seed_url, link_regex=None, delay=5, max_depth=-1, max_urls=-1
     """
     # the queue of URL's that still need to be crawled
     crawl_queue = MongoQueue()
+    if cache == None:
+        cache = MongoCache()
     crawl_queue.push(seed_url)
 
     # track how many URL's have been downloaded
@@ -55,7 +57,7 @@ def process_crawler(args, **kwargs):
     num_cpus = multiprocessing.cpu_count()
     print 'Starting {} processing'.format(num_cpus)
     processes = []
-    for i in range(num_cpus):
+    for i in range(2):
         p = multiprocessing.Process(target=thread_crawler,args=[args],kwargs=kwargs)
         p.start()
         processes.append(p)
@@ -76,11 +78,17 @@ if __name__ == '__main__':
     #link_crawler('http://example.webscraping.com', '/places/default/(index|view)', delay=0, num_retries=1, max_depth=1, user_agent='GoodCrawler',cache= MongoCache())
     begin = time.time()
     scrape_callback = JrsCallback()
-    thread_crawler(scrape_callback.seed_url, user_agent='jrs', cache = MongoCache(), scrape_callback= scrape_callback, max_depth=1)
+    process_crawler(scrape_callback.seed_url, user_agent='jrs', scrape_callback= scrape_callback, max_depth=1)
     end = time.time()
     print 'total times : %.2f seconds' % (end - begin) 
     '''
     100 urls
     multi-threads:195.73s
     sequential:1660.47s
+    2 process 10 threads:208.40, but too much time to raise keyError
+    '''
+
+    '''
+    2019.7.20 can't pickle thread.lock objects
+    can't pass cache = mongocache()  to multiprocess
     '''
