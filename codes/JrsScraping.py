@@ -65,7 +65,7 @@ def download(url,user_agent = 'jrs',num_retries = 2):
     return html
 
 if __name__ == "__main__":
-    url = 'http://192.168.0.102:8000/places/default/view/Aland-Islands-2'
+    url = 'http://192.168.0.103:8000/places/default/view/Aland-Islands-2'
     html = download(url)
     
     print re.findall(r'<tr id="places_area__row">.*?<td\s*class=["\']w2p_fw["\']>(.*?)</td>',html)
