@@ -145,7 +145,7 @@ if __name__ == "__main__":
     br = JrsBrowser()
     br.download('http://192.168.0.103:8000/places/default/search')
     br.attr('#search_term','value','.')
-    br.text('#page_size option','100')
+    br.text('#page_size option','1000')
     br.click('#search')
     elements = br.wait_load('#results a')
     for e in elements:
